@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pong Game</title>
+    <link rel="stylesheet" href="practiceponggame.css">
+</head>
+<body>
+    <section id = "gameContainer">
+        <div id="user-paddle" class = "paddle"></div> 
+        <div id="computer-paddle" class = "paddle"></div>
+        <div id = "user-score" class = "score">10</div>
+        <div id = "computer-score" class = "score">20</div>
+        <div id = "ball" class = "ball"></div>
+        <div id = "net" class = "net">
+<pre>
+|
+
+|
+
+|
+
+|
+
+|
+
+|
+
+|
+</pre>
+        </div>
+
+    </section>
+    <script>
+        const ball = document.getElementById('ball');
+        const computerPaddle = document.getElementById('computer-paddle');
+        const userPaddle = document.getElementById('user-paddle');
+        const userScore = document.getElementById('user-score');
+        const computerScore = document.getElementById('computer-score');
+        const container = document.getElementById('gameContainer');
+
+        var userTop = 175, userLeft = 5, userRight, userBottom;
+        var comTop = 175, compLeft, comBottom, comRight = 5;
+        var containerHeight = 500, containerWidth = 1200;
+        var ballTop = 235,ballBottom,ballLeft = 585,ballRight;
+        var topDirection = 1, leftDirection = 1;
+        var uScore = 0, cScore = 0;
+        var ballSpeed = 10;
+        
+        
+        userPaddle.addEventListener("mousemove", paddleMove);
+      
+        function paddleMove(event){
+            let rect = container.getBoundingClientRect();
+            userTop = event.y - rect.top - 75;
+
+            if(userTop < 0)
+            {
+                userTop = 0;
+            }
+            else if((userTop + 150) > containerHeight)
+            {
+                userTop = 350;
+            }
+            userPaddle.style.top = userTop + "px";
+        }
+        function resetBall()
+        {
+            ballTop = 235;
+            ballLeft = 585;
+        }
+        function collision(player)
+        {
+            ballBottom = containerHeight - (ballTop + 30);
+            ballRight = containerWidth - (ballLeft + 30);
+
+            if(player == "comPortion"){
+                comLeft = containerWidth - 35;
+                comBottom = containerHeight - (comTop + 150);
+
+                return ballTop > comTop && ballBottom > comBottom && (ballLeft + 30) == comLeft;
+            
+            }
+            else if (player == "userPortion")
+            {
+                userRight = containerWidth - 35;
+                userBottom = containerHeight - (userTop + 150);
+                return ballTop > userTop && ballBottom > userBottom && ballLeft == (userLeft+ 30);
+            }
+        }
+        function update()
+        {
+            ballTop += ballSpeed * topDirection;
+            ballLeft += ballSpeed * leftDirection;
+
+            ball.style.top = ballTop + "px";
+            ball.style.left = ballLeft + "px";
+
+
+            comTop = (ballTop - 75);
+            if(comTop < 0)
+            {
+                comTop = 0;
+            }
+            else if((comTop + 150) > containerHeight)
+            {
+                comTop = 350;
+            }
+            computerPaddle.style.top = comTop + "px";
+
+            if((ballTop + 30) > containerHeight || ballTop < 0)
+            {
+                topDirection *= -1;
+            }
+            let player = (ballLeft > 600) ? "comPortion" : "userPortion";
+            if(collision(player))
+            {
+                leftDirection *= -1;
+            }
+
+            if(ballLeft > containerWidth)
+            {
+                uScore++;
+                resetBall();
+            }
+            else if(ballLeft < 0)
+            {
+                cScore++;
+                resetBall();
+            }
+            userScore.innerHTML = uScore;
+            computerScore.innerHTML = cScore;
+
+        }
+        function startGame()
+        {
+            update();
+        }
+        setInterval(startGame, 50);
+    </script>
+</body>
+</html>
